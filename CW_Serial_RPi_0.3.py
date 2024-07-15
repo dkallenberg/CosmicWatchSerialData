@@ -88,7 +88,7 @@ class SerialDataLogger:
 
         # Save button for both ports
         save_btn = ttk.Button(file_frame, text="Save Data", command=self.save_data)
-        save_btn.grid(row=0, column=0, rowspan=2, padx=5, pady=5, sticky=tk.W)
+        save_btn.grid(row=0, column=2, rowspan=2, padx=5, pady=5, sticky=tk.W)
 
         # Frame for displaying incoming data for the primary port
         data1_frame = ttk.LabelFrame(self.root, text="Incoming Data - Primary Cosmic Watch (Last 50 lines)")
@@ -108,7 +108,7 @@ class SerialDataLogger:
 
         # Frame for the graph
         graph_frame = ttk.LabelFrame(self.root, text="Data Graph")
-        graph_frame.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
+        graph_frame.grid(row=0, column=1, rowspan=4 padx=10, pady=10, sticky=tk.W)
 
         # Create a matplotlib figure
         self.fig, self.ax = plt.subplots()
@@ -196,18 +196,18 @@ class SerialDataLogger:
                 if self.file1:
                     self.file1.write(line + '\n')
 
-                # Extract and plot data points (assuming data is comma-separated)
-                parts = line.split(',')
+                # Extract and plot data points (assuming data is space-separated)
+                parts = line.split(' ')
                 if len(parts) >= 2:
-                    x = float(parts[0])
-                    y = float(parts[1])
+                    x = float(parts[1])
+                    y = float(parts[0]) / float(parts[1])
                     self.data_x.append(x)
                     self.data_y.append(y)
                     self.ax.plot(self.data_x, self.data_y, 'b-')
                     self.canvas.draw()
 
-            except UnicodeDecodeError:
-                pass  # Ignore decoding errors
+            except (UnicodeDecodeError, ValueError) as e:
+                pass  # Ignore decoding errors and value errors
 
         # Call itself again to read the next line
         self.root.after(10, self.read_p_serial_data)  # Schedule the next read after 10ms

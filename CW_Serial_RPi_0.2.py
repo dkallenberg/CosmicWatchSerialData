@@ -82,7 +82,7 @@ class SerialDataLogger:
 
         # Save button for both ports
         save_btn = ttk.Button(file_frame, text="Save Data", command=self.save_data)
-        save_btn.grid(row=0, column=0, rowspan=2, padx=5, pady=5, sticky=tk.W)
+        save_btn.grid(row=0, column=2, rowspan=2, padx=5, pady=5, sticky=tk.W)
 
         # Frame for displaying incoming data for the primary port
         data1_frame = ttk.LabelFrame(self.root, text="Incoming Data - Primary Cosmic Watch (Last 50 lines)")
