@@ -3,6 +3,8 @@ from tkinter import ttk, scrolledtext, messagebox, filedialog
 import serial.tools.list_ports
 import serial
 import datetime
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class SerialDataLogger:
     def __init__(self, root):
@@ -35,6 +37,10 @@ class SerialDataLogger:
         # File handles
         self.file1 = None
         self.file2 = None
+
+        # Graph data
+        self.data_x = []
+        self.data_y = []
 
         # Populate available COM ports
         self.populate_com_ports()
@@ -99,6 +105,20 @@ class SerialDataLogger:
         # Scrolled text widget for secondary port
         self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=15)
         self.data2_text.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Frame for the graph
+        graph_frame = ttk.LabelFrame(self.root, text="Data Graph")
+        graph_frame.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
+
+        # Create a matplotlib figure
+        self.fig, self.ax = plt.subplots()
+        self.ax.set_title("Real-time Data Plot")
+        self.ax.set_xlabel("X Axis")
+        self.ax.set_ylabel("Y Axis")
+
+        # Add the figure to the Tkinter canvas
+        self.canvas = FigureCanvasTkAgg(self.fig, master=graph_frame)
+        self.canvas.get_tk_widget().grid(row=0, column=0, padx=5, pady=5)
 
     def populate_com_ports(self):
         # Clear any existing ports
@@ -176,6 +196,16 @@ class SerialDataLogger:
                 if self.file1:
                     self.file1.write(line + '\n')
 
+                # Extract and plot data points (assuming data is comma-separated)
+                parts = line.split(',')
+                if len(parts) >= 2:
+                    x = float(parts[0])
+                    y = float(parts[1])
+                    self.data_x.append(x)
+                    self.data_y.append(y)
+                    self.ax.plot(self.data_x, self.data_y, 'b-')
+                    self.canvas.draw()
+
             except UnicodeDecodeError:
                 pass  # Ignore decoding errors
 
@@ -197,7 +227,7 @@ class SerialDataLogger:
                 except UnicodeDecodeError:
                     pass  # Ignore decoding errors
 
-        # Schedule the next read for the secondary port after 10ms
+        # Schedule the next read for the secondary port after 50ms
         self.root.after(50, self.read_s_serial_data)
 
     def save_data(self):
