@@ -42,6 +42,9 @@ class SerialDataLogger:
         self.data_x = []
         self.data_y = []
 
+        self.data_yLast = 0
+        self.data_xLast = 0
+
         # Populate available COM ports
         self.populate_com_ports()
 
@@ -108,7 +111,7 @@ class SerialDataLogger:
 
         # Frame for the graph
         graph_frame = ttk.LabelFrame(self.root, text="Data Graph")
-        graph_frame.grid(row=0, column=1, rowspan=4 padx=10, pady=10, sticky=tk.W)
+        graph_frame.grid(row=0, column=1, rowspan=4, padx=10, pady=10, sticky=tk.W)
 
         # Create a matplotlib figure
         self.fig, self.ax = plt.subplots()
@@ -199,12 +202,15 @@ class SerialDataLogger:
                 # Extract and plot data points (assuming data is space-separated)
                 parts = line.split(' ')
                 if len(parts) >= 2:
-                    x = float(parts[1])
-                    y = float(parts[0]) / float(parts[1])
-                    self.data_x.append(x)
-                    self.data_y.append(y)
-                    self.ax.plot(self.data_x, self.data_y, 'b-')
-                    self.canvas.draw()
+                    if (self.data_xLast - parts[1]>= 60000):
+                        x = float((self.data_xLast - parts[1])/60000)
+                        y = float(self.data_yLast-parts[0]) / float(self.data_xLast - parts[1])
+                        self.data_x.append(x)
+                        self.data_y.append(y)
+                        self.data_xLast = parts[0]
+                        self.data_yLast = parts[1]
+                        self.ax.plot(self.data_x, self.data_y, 'b-')
+                        self.canvas.draw()
 
             except (UnicodeDecodeError, ValueError) as e:
                 pass  # Ignore decoding errors and value errors
