@@ -146,6 +146,7 @@ class SerialDataLogger:
             # Write timestamp to primary file
             if self.file1:
                 self.file1.write(f"Connection established at {self.get_current_timestamp()}\n")
+                self.data1_text.insert(f"Connection established at {self.get_current_timestamp()}\n")
 
             self.root.after(5, self.connect_serial2)  # Wait 5ms before connecting to the secondary port
             self.root.after(100, self.read_p_serial_data)  # Start reading data from the primary port after 100ms
@@ -160,6 +161,7 @@ class SerialDataLogger:
             # Write timestamp to secondary file
             if self.file2:
                 self.file2.write(f"Connection established at {self.get_current_timestamp()}\n")
+                self.data2_text.insert(f"Connection established at {self.get_current_timestamp()}\n")
 
             self.root.after(100, self.read_s_serial_data)  # Start reading data from the secondary port after 100ms
         except serial.SerialException as e:

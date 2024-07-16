@@ -90,15 +90,15 @@ class SerialDataLogger:
         data1_frame.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for the primary port
-        self.data1_text = scrolledtext.ScrolledText(data1_frame, wrap=tk.WORD, width=60, height=15)
+        self.data1_text = scrolledtext.ScrolledText(data1_frame, wrap=tk.WORD, width=60, height=25)
         self.data1_text.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
         # Frame for displaying incoming data for the secondary port
         data2_frame = ttk.LabelFrame(self.root, text="Incoming Data - Secondary Cosmic Watch (Last 50 lines)")
-        data2_frame.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
+        data2_frame.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for the secondary port
-        self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=15)
+        self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=25)
         self.data2_text.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
     def populate_com_ports(self):
