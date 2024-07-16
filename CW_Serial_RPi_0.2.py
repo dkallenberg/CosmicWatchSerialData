@@ -48,14 +48,14 @@ class SerialDataLogger:
         p_Port_label = ttk.Label(port_frame, text="COM Port Primary:")
         p_Port_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.p_Port_dropdown = ttk.Combobox(port_frame, textvariable=self.p_Port, width=8)
+        self.p_Port_dropdown = ttk.Combobox(port_frame, textvariable=self.p_Port, width=14)
         self.p_Port_dropdown.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
         # Dropdown menu for selecting COM the secondary port
         s_Port_label = ttk.Label(port_frame, text="COM Port Secondary:")
         s_Port_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.s_Port_dropdown = ttk.Combobox(port_frame, textvariable=self.s_Port, width=8)
+        self.s_Port_dropdown = ttk.Combobox(port_frame, textvariable=self.s_Port, width=14)
         self.s_Port_dropdown.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
         # Connect button
@@ -89,15 +89,15 @@ class SerialDataLogger:
         data1_frame.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for the primary port
-        self.data1_text = scrolledtext.ScrolledText(data1_frame, wrap=tk.WORD, width=60, height=15)
+        self.data1_text = scrolledtext.ScrolledText(data1_frame, wrap=tk.WORD, width=60, height=25)
         self.data1_text.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
         # Frame for displaying incoming data for the secondary port
         data2_frame = ttk.LabelFrame(self.root, text="Incoming Data - Secondary Cosmic Watch (Last 50 lines)")
-        data2_frame.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
+        data2_frame.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for secondary port
-        self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=15)
+        self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=25)
         self.data2_text.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
     def populate_com_ports(self):
