@@ -121,6 +121,11 @@ class SerialDataLogger:
 
     def get_current_timestamp(self):
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    def update_filenames(self):
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.p_default_filename = timestamp + "_primary_data.txt"
+        self.s_default_filename = timestamp + "_secondary_data.txt"
 
     def connect_serial(self):
         # Update filenames with current timestamp
