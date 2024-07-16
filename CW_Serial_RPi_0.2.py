@@ -148,9 +148,9 @@ class SerialDataLogger:
             self.ser1 = serial.Serial(self.p_Port.get(), self.baudrate)
             self.data1_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
             
-            # Write timestamp to primary file
-            if self.file1:
-                self.file1.write('Connection established at ' + self.timestamp + '\n')
+            # Open file for writing for the primary port
+            self.file1 = open(self.p_filename.get(), 'w')
+            self.file1.write('Connection established at ' + self.timestamp + '\n')
 
             self.root.after(5, self.connect_serial2)  # Wait 5ms before connecting to the secondary port
             self.root.after(100, self.read_p_serial_data)  # Start reading data from the primary port after 100ms
@@ -163,9 +163,9 @@ class SerialDataLogger:
             self.ser2 = serial.Serial(self.s_Port.get(), self.baudrate)
             self.data2_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
 
-            # Write timestamp to secondary file
-            if self.file2:
-                self.file2.write('Connection established at ' + self.timestamp + '\n')  
+            # Open file for writing for the secondary port
+            self.file2 = open(self.s_filename.get(), 'w')
+            self.file2.write('Connection established at ' + self.timestamp + '\n')
 
             self.root.after(100, self.read_s_serial_data)  # Start reading data from the secondary port after 100ms
         except serial.SerialException as e:
