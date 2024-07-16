@@ -167,28 +167,4 @@ class SerialDataLogger:
                     if self.file2:
                         self.file2.write(line + '\n')
 
-                except UnicodeDecodeError:
-                    pass  # Ignore decoding errors
-
-        # Schedule the next read for the secondary port after 10ms
-        self.root.after(50, self.read_s_serial_data)
-
-    def cleanup(self):
-        # Cleanup resources
-        if self.ser1 and self.ser1.is_open:
-            self.ser1.close()
-        if self.ser2 and self.ser2.is_open:
-            self.ser2.close()
-        if self.file1:
-            self.file1.close()
-        if self.file2:
-            self.file2.close()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = SerialDataLogger(root)
-    root.protocol("WM_DELETE_WINDOW", app.cleanup)  # Handle window close event
-    root.mainloop()
-
-    # Cleanup
-    app.cleanup()
+                except UnicodeDecodeError
