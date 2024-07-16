@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, scrolledtext, messagebox, filedialog
+from tkinter import ttk, scrolledtext, messagebox
 import serial.tools.list_ports
 import serial
 import datetime
@@ -59,31 +59,9 @@ class SerialDataLogger:
         connect_btn = ttk.Button(port_frame, text="Connect", command=self.connect_serial)
         connect_btn.grid(row=0, column=2, rowspan=2, padx=5, pady=5, sticky=tk.W)
 
-        # Frame for file settings
-        file_frame = ttk.LabelFrame(self.root, text="File Settings")
-        file_frame.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
-
-        # File name entry for the primary port
-        file1_label = ttk.Label(file_frame, text="File Name (Primary):")
-        file1_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-
-        self.file1_entry = ttk.Entry(file_frame, textvariable=self.p_filename, width=45)
-        self.file1_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-
-        # File name entry for the secondary port
-        file2_label = ttk.Label(file_frame, text="File Name (Secondary):")
-        file2_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-
-        self.file2_entry = ttk.Entry(file_frame, textvariable=self.s_filename, width=45)
-        self.file2_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-
-        # Save button for both ports
-        save_btn = ttk.Button(file_frame, text="Save Data", command=self.save_data)
-        save_btn.grid(row=0, column=3, rowspan=2, padx=5, pady=5, sticky=tk.W)
-
         # Frame for displaying incoming data for the primary port
         data1_frame = ttk.LabelFrame(self.root, text="Incoming Data - Primary Cosmic Watch (Last 50 lines)")
-        data1_frame.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+        data1_frame.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for the primary port
         self.data1_text = scrolledtext.ScrolledText(data1_frame, wrap=tk.WORD, width=60, height=25)
@@ -91,7 +69,7 @@ class SerialDataLogger:
 
         # Frame for displaying incoming data for the secondary port
         data2_frame = ttk.LabelFrame(self.root, text="Incoming Data - Secondary Cosmic Watch (Last 50 lines)")
-        data2_frame.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
+        data2_frame.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
 
         # Scrolled text widget for secondary port
         self.data2_text = scrolledtext.ScrolledText(data2_frame, wrap=tk.WORD, width=60, height=25)
@@ -125,8 +103,6 @@ class SerialDataLogger:
         # Update filenames with current timestamp and folder path
         self.p_filename.set(os.path.join(self.folder_path, "primary_data.txt"))
         self.s_filename.set(os.path.join(self.folder_path, "secondary_data.txt"))
-        self.file1_entry.update()
-        self.file2_entry.update()
 
         # Close previous connections if any
         if self.ser1 and self.ser1.is_open:
@@ -196,51 +172,6 @@ class SerialDataLogger:
 
         # Schedule the next read for the secondary port after 10ms
         self.root.after(50, self.read_s_serial_data)
-
-    def save_data(self):
-        # Save logic remains the same for choosing new file locations
-        # but we will disable opening the files here as they are opened in the connect_serial method
-        # Primary port file save
-        file_path1 = filedialog.asksaveasfilename(initialfile=self.p_filename.get(),
-                                                  filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-        if file_path1:
-            try:
-                # Close existing file for the primary port if any
-                if self.file1:
-                    self.file1.close()
-                
-                # Open new file for the primary port for writing
-                self.file1 = open(file_path1, 'w')
-                self.p_filename.set(file_path1)
-                
-                # Write existing data in scrolled text widget for the primary port to file
-                data1 = self.data1_text.get('1.0', tk.END)
-                self.file1.write(data1)
-            
-            except IOError as e:
-                messagebox.showerror("Error", f"Failed to save file for Primary Cosmic Watch: {e}")
-
-        # Secondary port file save
-        file_path2 = filedialog.asksaveasfilename(initialfile=self.s_filename.get(),
-                                                  filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-        if file_path2:
-            try:
-                # Close existing file for the secondary port if any
-                if self.file2:
-                    self.file2.close()
-                
-                # Open new file for the secondary port for writing
-                self.file2 = open(file_path2, 'w')
-                self.s_filename.set(file_path2)
-                
-                # Write existing data in scrolled text widget for the secondary port to file
-                data2 = self.data2_text.get('1.0', tk.END)
-                self.file2.write(data2)
-                
-                messagebox.showinfo("File Saved", f"Data saved to {file_path1} and {file_path2}")
-            
-            except IOError as e:
-                messagebox.showerror("Error", f"Failed to save file for Secondary Cosmic Watch: {e}")
 
     def cleanup(self):
         # Cleanup resources
