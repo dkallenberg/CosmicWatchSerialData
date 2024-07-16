@@ -146,7 +146,7 @@ class SerialDataLogger:
         # Open serial the primary port
         try:
             self.ser1 = serial.Serial(self.p_Port.get(), self.baudrate)
-            self.data1_text.insert('Connection established at ' + self.timestamp + '\n')
+            self.data1_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
             
             # Write timestamp to primary file
             if self.file1:
@@ -161,7 +161,7 @@ class SerialDataLogger:
         # Open serial the secondary port
         try:
             self.ser2 = serial.Serial(self.s_Port.get(), self.baudrate)
-            self.data2_text.insert('Connection established at ' + self.timestamp + '\n')
+            self.data2_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
 
             # Write timestamp to secondary file
             if self.file2:
