@@ -3,29 +3,21 @@ from tkinter import ttk, scrolledtext, messagebox, filedialog
 import serial.tools.list_ports
 import serial
 import datetime
+import os
 
 class SerialDataLogger:
     def __init__(self, root):
         self.root = root
         self.root.title("Serial Data Logger")
 
-        self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        
         # Serial port settings
         self.p_Port = tk.StringVar()
         self.s_Port = tk.StringVar()
         self.baudrate = 9600
 
-        # Default filenames based on current date and time
-        self.update_filenames()
-
-        # File settings for the primary port
+        # Default filenames
         self.p_filename = tk.StringVar()
-        self.p_filename.set(self.p_default_filename)
-
-        # File settings for the secondary port
         self.s_filename = tk.StringVar()
-        self.s_filename.set(self.s_default_filename)
 
         # Create GUI elements
         self.create_gui()
@@ -37,6 +29,9 @@ class SerialDataLogger:
         # File handles
         self.file1 = None
         self.file2 = None
+
+        # Folder path
+        self.folder_path = ""
 
         # Populate available COM ports
         self.populate_com_ports()
@@ -120,20 +115,16 @@ class SerialDataLogger:
                 self.s_Port.set(com_ports[1])  # Select the second port by default
 
     def get_current_timestamp(self):
-        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    def update_filenames(self):
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        self.p_default_filename = timestamp + "_primary_data.txt"
-        self.s_default_filename = timestamp + "_secondary_data.txt"
+        return datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     def connect_serial(self):
-        # Update filenames with current timestamp
-        self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        self.p_default_filename = self.timestamp + "_primary_data.txt"
-        self.s_default_filename = self.timestamp + "_secondary_data.txt"
-        self.p_filename.set(self.p_default_filename)
-        self.s_filename.set(self.s_default_filename)
+        # Create a new folder with a timestamp
+        self.folder_path = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        os.makedirs(self.folder_path, exist_ok=True)
+
+        # Update filenames with current timestamp and folder path
+        self.p_filename.set(os.path.join(self.folder_path, "primary_data.txt"))
+        self.s_filename.set(os.path.join(self.folder_path, "secondary_data.txt"))
         self.file1_entry.update()
         self.file2_entry.update()
 
@@ -146,11 +137,11 @@ class SerialDataLogger:
         # Open serial the primary port
         try:
             self.ser1 = serial.Serial(self.p_Port.get(), self.baudrate)
-            self.data1_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
+            self.data1_text.insert(tk.END, 'Connection established at ' + self.get_current_timestamp() + '\n')
             
             # Open file for writing for the primary port
             self.file1 = open(self.p_filename.get(), 'w')
-            self.file1.write('Connection established at ' + self.timestamp + '\n')
+            self.file1.write('Connection established at ' + self.get_current_timestamp() + '\n')
 
             self.root.after(5, self.connect_serial2)  # Wait 5ms before connecting to the secondary port
             self.root.after(100, self.read_p_serial_data)  # Start reading data from the primary port after 100ms
@@ -161,11 +152,11 @@ class SerialDataLogger:
         # Open serial the secondary port
         try:
             self.ser2 = serial.Serial(self.s_Port.get(), self.baudrate)
-            self.data2_text.insert(tk.END,'Connection established at ' + self.timestamp + '\n')
+            self.data2_text.insert(tk.END, 'Connection established at ' + self.get_current_timestamp() + '\n')
 
             # Open file for writing for the secondary port
             self.file2 = open(self.s_filename.get(), 'w')
-            self.file2.write('Connection established at ' + self.timestamp + '\n')
+            self.file2.write('Connection established at ' + self.get_current_timestamp() + '\n')
 
             self.root.after(100, self.read_s_serial_data)  # Start reading data from the secondary port after 100ms
         except serial.SerialException as e:
@@ -207,7 +198,9 @@ class SerialDataLogger:
         self.root.after(50, self.read_s_serial_data)
 
     def save_data(self):
-        # Open file dialog to choose file location for the primary port
+        # Save logic remains the same for choosing new file locations
+        # but we will disable opening the files here as they are opened in the connect_serial method
+        # Primary port file save
         file_path1 = filedialog.asksaveasfilename(initialfile=self.p_filename.get(),
                                                   filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         if file_path1:
@@ -227,7 +220,7 @@ class SerialDataLogger:
             except IOError as e:
                 messagebox.showerror("Error", f"Failed to save file for Primary Cosmic Watch: {e}")
 
-        # Open file dialog to choose file location for the secondary port
+        # Secondary port file save
         file_path2 = filedialog.asksaveasfilename(initialfile=self.s_filename.get(),
                                                   filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         if file_path2:
